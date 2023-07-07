@@ -1,3 +1,17 @@
-from django.shortcuts import render
+from rest_framework.generics import ListCreateAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from . import serializers
 
-# Create your views here.
+
+class CreateOrderView(ListCreateAPIView):
+    serializer_class = serializers.OrderSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        orders = user.orders.all()
+        serializer = serializers.OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=200)
+
+
